@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>MersiRoster — ระบบตารางวันหยุด Mersi Clinic</title>
+<meta name="description" content="ระบบลงวันหยุด การลา และตารางกะพนักงาน Mersi Clinic">
+<meta name="theme-color" content="#5c6b47">
+<link rel="icon" type="image/png" href="logo.png">
+<link rel="apple-touch-icon" href="logo.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600&family=Noto+Sans+Thai:wght@300;400;600&display=swap" rel="stylesheet">
+<style>
+:root{--sage:#8B9677;--sage-deep:#47543A;--cream:#F5F2E9;--sand:#D9CFAA;--ink:#3A4432}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;background:var(--cream)}
+body{font-family:'Noto Sans Thai',sans-serif;color:var(--ink)}
+
+/* ---------- หน้าจอโหลด ---------- */
+#loader{
+  position:fixed;inset:0;z-index:10;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;
+  background:var(--cream) url('bg.jpg') center/cover no-repeat;
+  transition:opacity .5s ease,visibility .5s ease;
+}
+#loader.done{opacity:0;visibility:hidden}
+.badge{
+  width:132px;height:132px;display:block;
+  filter:drop-shadow(0 10px 26px rgba(71,84,58,.26));
+  animation:pulse 2.6s ease-in-out infinite;
+}
+.tag{font-size:15.5px;color:#5F6A56;margin-top:2px;font-weight:500}
+.bar{width:190px;height:5px;border-radius:4px;background:rgba(139,150,119,.22);overflow:hidden;margin-top:6px}
+.bar i{display:block;height:100%;width:40%;border-radius:4px;background:linear-gradient(90deg,var(--sage),var(--sand));animation:slide 1.25s ease-in-out infinite}
+.hint{font-size:12.5px;color:#8A9080}
+.manual{margin-top:10px;font-size:13.5px}
+.manual a{color:#8A7650;font-weight:600}
+@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.055)}}
+@keyframes slide{0%{transform:translateX(-110%)}100%{transform:translateX(260%)}}
+@media(prefers-reduced-motion:reduce){.badge,.bar i{animation:none}}
+
+/* ---------- ตัวระบบ ---------- */
+#app{position:fixed;inset:0;width:100%;height:100%;border:0;display:block}
+</style>
+</head>
+<body>
+
+<div id="loader">
+  <img class="badge" src="logo.png" alt="Mersi Clinic" width="132" height="132">
+  <div class="tag">ระบบตารางวันหยุด &amp; การลาพนักงาน</div>
+  <div class="bar"><i></i></div>
+  <div class="hint">กำลังเปิดระบบ…</div>
+  <div class="manual" id="manual" style="visibility:hidden">
+    เปิดไม่ขึ้น? <a id="direct" href="#" target="_blank" rel="noopener">กดที่นี่เพื่อเปิดโดยตรง</a>
+  </div>
+</div>
+
+<iframe id="app" title="MersiRoster" allow="clipboard-write; fullscreen"></iframe>
+
+<script>
+/* ============================================================
+   URL ของเว็บแอป Apps Script  (แก้ที่บรรทัดเดียวนี้เท่านั้น)
+   ⚠️ เวลาอัปเดตโค้ด ให้ใช้ Manage deployments → ✏️ → New version
+      ห้ามสร้าง New deployment ไม่งั้น URL เปลี่ยนแล้วลิงก์นี้จะพัง
+   ============================================================ */
+var APP_URL = 'https://script.google.com/macros/s/AKfycbyV71cxlrjVNQRYpW35z8FYRUsQ2lEFZhEuNjcDMKb32LPi7zxaft4h_SpM5v2cVIKmng/exec';
+
+(function(){
+  var frame  = document.getElementById('app');
+  var loader = document.getElementById('loader');
+  var manual = document.getElementById('manual');
+  document.getElementById('direct').href = APP_URL;
+
+  // ส่ง query string ต่อไปยังเว็บแอป (เผื่อทำลิงก์เฉพาะสาขาในอนาคต)
+  frame.src = APP_URL + (location.search || '');
+
+  var hidden = false;
+  function hideLoader(){
+    if (hidden) return;
+    hidden = true;
+    setTimeout(function(){ loader.classList.add('done'); }, 350);
+  }
+  frame.addEventListener('load', hideLoader);
+
+  // เผื่อเน็ตช้า: ซ่อนหน้าโหลดเองที่ 12 วิ และโชว์ลิงก์สำรองที่ 8 วิ
+  setTimeout(function(){ manual.style.visibility = 'visible'; }, 8000);
+  setTimeout(hideLoader, 12000);
+})();
+</script>
+</body>
+</html>
